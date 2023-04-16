@@ -4,10 +4,12 @@ abstract class NewsEvent {}
 
 class LoadNewsEvent extends NewsEvent {
   final String? category;
-  final int? page;
 
-  LoadNewsEvent({this.category, this.page});
+  LoadNewsEvent({this.category});
 }
 
+class LoadPaginationNewsEvent extends NewsEvent {
+  final String? category;
 
-
+  LoadPaginationNewsEvent({this.category});
+}

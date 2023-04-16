@@ -6,6 +6,8 @@ class InitialNewsState extends NewsState {}
 
 class LoadingNewsState extends NewsState {}
 
+class LoadingPaginationNewsState extends NewsState {}
+
 class LoadedNewsState extends NewsState {
   List<ArticleModel> articleModel;
 

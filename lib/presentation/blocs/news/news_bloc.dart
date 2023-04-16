@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/data/data_sources/api_service.dart';
 import 'package:news_app/data/models/article_model.dart';
@@ -9,7 +11,13 @@ part 'new_state.dart';
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
   final NewsApiService _apiService = NewsApiService();
 
-  String? selectedCategory;
+  String? _selectedCategory;
+
+  String? get selectedCategory => _selectedCategory;
+
+  int _currentPage = 1;
+
+  bool _newsAvailable = true;
 
   NewsBloc() : super(InitialNewsState()) {
     on<LoadNewsEvent>((event, emit) async {
@@ -17,11 +25,11 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       try {
         List<ArticleModel> articleModel = await _apiService.fetchNewsArticle(
           category: event.category,
-          page: event.page ?? 1,
+          page: _currentPage,
         );
 
         if (event.category != null) {
-          selectedCategory = event.category;
+          _selectedCategory = event.category;
         }
 
         emit(LoadedNewsState(articleModel));
@@ -30,8 +38,27 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       }
     });
 
-    // on<LoadBusinessNewsEvent>((event, emit))  async{
-    //   emit(LoadingH)
-    // }
+    on<LoadPaginationNewsEvent>((event, emit) async {
+      if (_newsAvailable) {
+        emit(LoadingPaginationNewsState());
+
+        try {
+          List<ArticleModel> articleModel = await _apiService.fetchNewsArticle(
+            category: event.category,
+            page: _currentPage + 1,
+          );
+
+          if (articleModel.isEmpty) {
+            _newsAvailable = false;
+          }
+
+          _currentPage++;
+
+          emit(LoadedNewsState(articleModel));
+        } catch (e, s) {
+          emit(ErrorNewsState('Unknown Error'));
+        }
+      }
+    });
   }
 }

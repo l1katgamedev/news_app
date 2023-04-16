@@ -23,18 +23,12 @@ class _HomePageState extends State<HomePage> {
   int currentPage = 1;
 
   List<String> categories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'];
+  List<ArticleModel> articleList = [];
 
   @override
   void initState() {
     BlocProvider.of<NewsBloc>(context).add(LoadNewsEvent());
     super.initState();
-  }
-
-  int addPage() {
-    setState(() {
-      currentPage++;
-    });
-    return currentPage;
   }
 
   @override
@@ -114,111 +108,7 @@ class _HomePageState extends State<HomePage> {
                 }
 
                 if (state is LoadedNewsState) {
-                  return LazyLoadScrollView(
-                    onEndOfPage: () {
-                      addPage();
-                      BlocProvider.of<NewsBloc>(context).add(LoadNewsEvent(
-                        category: 'sports',
-                        page: currentPage,
-                      ));
-                    },
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: state.articleModel.length,
-                      itemBuilder: (context, index) {
-                        ArticleModel snapshot = state.articleModel[index];
-                        return Container(
-                          height: 520,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                '${snapshot.urlToImage}',
-                              ),
-                              fit: BoxFit.cover,
-                              opacity: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.8),
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 0),
-                              ),
-                            ],
-                          ),
-                          margin: const EdgeInsets.only(
-                            left: 16,
-                            right: 16,
-                            top: 16,
-                            bottom: 0,
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(16),
-                                      bottomLeft: Radius.circular(16),
-                                    ),
-                                    color: ColorApp.mainColor,
-                                  ),
-                                  child: Text(
-                                    '${snapshot.title}',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 16,
-                                right: 16,
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: ColorApp.secondaryColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: const Icon(
-                                    UniconsLine.bookmark,
-                                    color: ColorApp.mainColor,
-                                    size: 24,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 16,
-                                left: 16,
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: ColorApp.secondaryColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    '${snapshot.source!.name}',
-                                    style: const TextStyle(
-                                      color: ColorApp.mainColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  );
+                  articleList = state.articleModel;
                 }
 
                 if (state is ErrorNewsState) {
@@ -226,8 +116,119 @@ class _HomePageState extends State<HomePage> {
                     child: Text('Error home'),
                   );
                 }
-                return const Center(
-                  child: Text('Error home'),
+
+                return LazyLoadScrollView(
+                  isLoading: state is LoadingPaginationNewsState,
+                  onEndOfPage: () => BlocProvider.of<NewsBloc>(context).add(LoadPaginationNewsEvent()),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          itemCount: articleList.length,
+                          itemBuilder: (context, index) {
+                            ArticleModel snapshot = articleList[index];
+                            return Container(
+                              height: 520,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    '${snapshot.urlToImage}',
+                                  ),
+                                  fit: BoxFit.cover,
+                                  opacity: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.8),
+                                    blurRadius: 10,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                              margin: const EdgeInsets.only(
+                                left: 16,
+                                right: 16,
+                                top: 16,
+                                bottom: 0,
+                              ),
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          bottomRight: Radius.circular(16),
+                                          bottomLeft: Radius.circular(16),
+                                        ),
+                                        color: ColorApp.mainColor,
+                                      ),
+                                      child: Text(
+                                        '${snapshot.title}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 16,
+                                    right: 16,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: ColorApp.secondaryColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: const Icon(
+                                        UniconsLine.bookmark,
+                                        color: ColorApp.mainColor,
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 16,
+                                    left: 16,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: ColorApp.secondaryColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Text(
+                                        '${snapshot.source!.name}',
+                                        style: const TextStyle(
+                                          color: ColorApp.mainColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Visibility(
+                        visible: state is LoadingPaginationNewsState,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

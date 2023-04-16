@@ -30,10 +30,11 @@ class MyApp extends StatelessWidget {
             listener: (_, state) {
               if (state is ConnectedNetworkState) {
                 showDialog(
-                    context: _,
-                    builder: (_) {
-                      return Text(state.message);
-                    });
+                  context: _,
+                  builder: (_) {
+                    return Text(state.message);
+                  },
+                );
               }
               if (state is ErrorNetworkState) {
                 ScaffoldMessenger.of(context).showSnackBar(
