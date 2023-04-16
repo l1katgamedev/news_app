@@ -5,11 +5,12 @@ import 'package:news_app/data/models/article_model.dart';
 class NewsApiService {
   final Dio _dio = Dio();
 
-  Future<List<ArticleModel>> fetchNewsArticle({String? category}) async {
+  Future<List<ArticleModel>> fetchNewsArticle({String? category, int? page}) async {
     Map<String, dynamic> queryParams = {
       'country': 'us',
       'apiKey': ApiService.apiKey,
       'category': category,
+      'page': page,
     };
 
     try {
@@ -17,11 +18,11 @@ class NewsApiService {
         '${ApiService.baseUrl}/top-headlines',
         queryParameters: queryParams,
       );
+
       NewsModel newsModel = NewsModel.fromJson(response.data);
       return newsModel.articles;
     } on DioError catch (e) {
       throw Exception('Exception: $e');
     }
   }
-
 }

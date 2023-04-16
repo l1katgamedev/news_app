@@ -39,7 +39,7 @@ class ArticleModel {
     title = json['title'];
     description = json['description'];
     url = json['url'];
-    urlToImage = json['urlToImage'];
+    urlToImage = json['urlToImage'] ?? 'https://www.google.com/search?q=question+&tbm=isch&ved=2ahUKEwjUgMeb2K7-AhVwhP0HHVe3AqEQ2-cCegQIABAA&oq=question+&gs_lcp=CgNpbWcQAzIHCAAQigUQQzIFCAAQgAQyBwgAEIoFEEMyBQgAEIAEMgUIABCABDIHCAAQigUQQzIFCAAQgAQyBwgAEIoFEEMyBwgAEIoFEEMyBQgAEIAEOgQIIxAnOgYIABAIEB46BwgAEBgQgAQ6BwgjEOoCECdQrwZYvpYCYNWaAmgUcAB4AIABhwGIAZAMkgEEMC4xMpgBAKABAaoBC2d3cy13aXotaW1nsAEKwAEB&sclient=img&ei=ixA8ZJSPE_CI9u8P1-6KiAo&bih=854&biw=1512#imgrc=Gi93QW_IaYtqLM';
     publishedAt = json['publishedAt'];
     content = json['content'];
   }
